@@ -4,18 +4,35 @@ import { StyleSheet, TextInput, View } from 'react-native';
 import IconButton from '../components/UI/IconButton';
 import { GlobalStyles } from '../constants/styles';
 import { ExpensesContext } from '../store/expenses-context';
+import CusInput from '../components/customInput'
 import ExpenseForm from '../manageExpense/ExpenseForm';
 
 function ManageExpense({ route, navigation }) {
-
+  const [inputValues, setInputValues] = useState({
+    amount: '',
+    date: '',
+    description: '',
+  });
+  function inputChangedHandler(inputIdentifier, enteredValue) {
+    setInputValues((curInputValues) => {
+        return {
+            ...curInputValues,
+            [inputIdentifier]: enteredValue,
+        };
+    });
+}
   const expensesCtx = useContext(ExpensesContext);
+
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
 
-  const selectedExpense =
-    expensesCtx.expenses.find((expense) =>
-      expense.id === editedExpenseId
-    )
+  useEffect(() => {
+    const savedData =
+      expensesCtx.expenses.filter((expense) =>
+        expense.id === editedExpenseId)
+    setInputValues(savedData)    
+
+  }, [editedExpenseId])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -27,11 +44,14 @@ function ManageExpense({ route, navigation }) {
     expensesCtx.deleteExpense(editedExpenseId);
     navigation.goBack();
   }
+
   function cancelHandler() {
     navigation.goBack();
   }
+
   function confirmHandler(expenseData) {
     if (isEditing) {
+
       expensesCtx.updateExpense(editedExpenseId, expenseData);
     } else {
       expensesCtx.addExpense(expenseData);
@@ -44,7 +64,6 @@ function ManageExpense({ route, navigation }) {
       <ExpenseForm
         onSelect={cancelHandler}
         onSubmit={confirmHandler}
-        defaultValues= {selectedExpense}
         buttonTitleHandler={isEditing ? 'Edit' : 'Add'}
 
       />
@@ -55,7 +74,6 @@ function ManageExpense({ route, navigation }) {
             color={GlobalStyles.colors.error500}
             size={36}
             onPress={deleteExpenseHandler}
-            defaultValues={selectedExpense}
           />
         </View>
       )}

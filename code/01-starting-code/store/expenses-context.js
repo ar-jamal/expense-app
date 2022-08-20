@@ -47,17 +47,17 @@ const DUMMY_EXPENSES = [
     id: 'e8',
     description: 'A book',
     amount: 14.99,
-    date: new Date('2022-02-19'),
+    date: new Date('2022-08-12'),
   },
   {
     id: 'e9',
     description: 'Another book',
     amount: 18.59,
-    date: new Date('2022-02-18'),
+    date: new Date('2022-08-10'),
   },
 ];
 
-export const ExpensesContext = createContext({
+export const  ExpensesContext = createContext({
   expenses: [],
   addExpense: ({ description, amount, date }) => {},
   deleteExpense: (id) => {},
@@ -72,7 +72,7 @@ function expensesReducer(state, action) {
     case 'UPDATE':
       const updatableExpenseIndex = state.findIndex(
         (expense) => expense.id === action.payload.id
-      );
+      );   
       const updatableExpense = state[updatableExpenseIndex];
       const updatedItem = { ...updatableExpense, ...action.payload.data };
       const updatedExpenses = [...state];
