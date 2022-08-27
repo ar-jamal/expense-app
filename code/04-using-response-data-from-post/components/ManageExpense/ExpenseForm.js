@@ -31,7 +31,6 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, onSubmitNew, defau
     });
   }
 
-  
 
   function submitHandler() {
     const expenseData = {
