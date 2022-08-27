@@ -31,13 +31,12 @@ function ManageExpense({ route, navigation }) {
   }
   
   async function addNewExpense (expenseData) {
-    if (isEditing) {
-      const id = await storeExpense(expenseData);
+     const id = await storeExpense(expenseData);
       setEditingId(id)
       expensesCtx.addExpense({ ...expenseData, id: id });
+      navigation.goBack()
     }
-    navigation.goBack()
-  }
+  
 
   function cancelHandler() {
     navigation.goBack();
