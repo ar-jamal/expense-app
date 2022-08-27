@@ -1,17 +1,18 @@
-import { useContext, useLayoutEffect } from 'react';
+import { useContext, useLayoutEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import ExpenseForm from '../components/ManageExpense/ExpenseForm';
 import IconButton from '../components/UI/IconButton';
 import { GlobalStyles } from '../constants/styles';
 import { ExpensesContext } from '../store/expenses-context';
-import { storeExpense } from '../util/http';
+import { storeExpense, uptoDateExpense, deleteExpense } from '../util/http';
 
 function ManageExpense({ route, navigation }) {
   const expensesCtx = useContext(ExpensesContext);
 
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
+  const [editingId, setEditingId] = useState(editedExpenseId)
 
   const selectedExpense = expensesCtx.expenses.find(
     (expense) => expense.id === editedExpenseId
@@ -24,8 +25,18 @@ function ManageExpense({ route, navigation }) {
   }, [navigation, isEditing]);
 
   function deleteExpenseHandler() {
+    deleteExpense(editedExpenseId);
     expensesCtx.deleteExpense(editedExpenseId);
     navigation.goBack();
+  }
+  
+  async function addNewExpense (expenseData) {
+    if (isEditing) {
+      const id = await storeExpense(expenseData);
+      setEditingId(id)
+      expensesCtx.addExpense({ ...expenseData, id: id });
+    }
+    navigation.goBack()
   }
 
   function cancelHandler() {
@@ -34,6 +45,7 @@ function ManageExpense({ route, navigation }) {
 
   async function confirmHandler(expenseData) {
     if (isEditing) {
+      await uptoDateExpense(editedExpenseId, expenseData)
       expensesCtx.updateExpense(editedExpenseId, expenseData);
     } else {
       const id = await storeExpense(expenseData);
@@ -47,6 +59,7 @@ function ManageExpense({ route, navigation }) {
       <ExpenseForm
         submitButtonLabel={isEditing ? 'Update' : 'Add'}
         onSubmit={confirmHandler}
+        onSubmitNew= {addNewExpense}
         onCancel={cancelHandler}
         defaultValues={selectedExpense}
       />

@@ -6,7 +6,7 @@ import Button from '../UI/Button';
 import { getFormattedDate } from '../../util/date';
 import { GlobalStyles } from '../../constants/styles';
 
-function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
+function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, onSubmitNew, defaultValues, AddNew }) {
   const [inputs, setInputs] = useState({
     amount: {
       value: defaultValues ? defaultValues.amount.toString() : '',
@@ -30,6 +30,8 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
       };
     });
   }
+
+  
 
   function submitHandler() {
     const expenseData = {
@@ -56,7 +58,19 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
       });
       return;
     }
-
+    // if (!!defaultValues) {
+    //   if (
+    //     expenseData.amount === defaultValues.amount ||
+    //     expenseData.date === defaultValues.date ||
+    //     expenseData.description === defaultValues.description
+    //   ) {
+    //     navigation.goback();
+    //   }
+    //   {
+    //       onSubmitNew(expenseData);
+    //     }
+    //   }
+    // }
     onSubmit(expenseData);
   }
 
@@ -114,6 +128,9 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
         <Button style={styles.button} onPress={submitHandler}>
           {submitButtonLabel}
         </Button>
+        <Button style={styles.button} onPress={onSubmitNew}>
+          Add New
+        </Button>
       </View>
     </View>
   );
@@ -146,11 +163,11 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   button: {
-    minWidth: 120,
+    minWidth: 80,
     marginHorizontal: 8,
   },
 });
