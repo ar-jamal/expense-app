@@ -1,28 +1,35 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import Input from './Input';
 import Button from '../UI/Button';
 import { getFormattedDate } from '../../util/date';
 import { GlobalStyles } from '../../constants/styles';
+import { deleteExpense } from '../../util/http';
 
 function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, onSubmitNew, defaultValues, AddNew }) {
   const [inputs, setInputs] = useState({
     amount: {
-      value: defaultValues ? defaultValues.amount.toString() : '',
+      value: defaultValues ? defaultValues.amount.toString() : '34.55',
       isValid: true,
     },
     date: {
-      value: defaultValues ? getFormattedDate(defaultValues.date) : '',
+      value: defaultValues ? getFormattedDate(defaultValues.date) : '2022-05-04',
       isValid: true,
     },
     description: {
-      value: defaultValues ? defaultValues.description : '',
+      value: defaultValues ? defaultValues.description : 'Update all input fields and Write your own Description',
       isValid: true,
     },
   });
 
   function inputChangedHandler(inputIdentifier, enteredValue) {
+    // if (enteredValue === 
+    //   inputs.amount.value ||
+    //   inputs.date.value ||
+    //   inputs.description.value ) {
+    //     Alert.alert ('Kindly update the inputs', 'ok')
+    // }
     setInputs((curInputs) => {
       return {
         ...curInputs,
@@ -30,7 +37,6 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, onSubmitNew, defau
       };
     });
   }
-
 
   function submitHandler() {
     const expenseData = {
@@ -57,19 +63,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, onSubmitNew, defau
       });
       return;
     }
-    // if (!!defaultValues) {
-    //   if (
-    //     expenseData.amount === defaultValues.amount ||
-    //     expenseData.date === defaultValues.date ||
-    //     expenseData.description === defaultValues.description
-    //   ) {
-    //     navigation.goback();
-    //   }
-    //   {
-    //       onSubmitNew(expenseData);
-    //     }
-    //   }
-    // }
+   
     onSubmit(expenseData);
   }
 
@@ -127,9 +121,9 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, onSubmitNew, defau
         <Button style={styles.button} onPress={submitHandler}>
           {submitButtonLabel}
         </Button>
-        <Button style={styles.button} onPress={onSubmitNew}>
+        {/* <Button style={styles.button} onPress={onSubmitNew}>
           Add New
-        </Button>
+        </Button> */}
       </View>
     </View>
   );

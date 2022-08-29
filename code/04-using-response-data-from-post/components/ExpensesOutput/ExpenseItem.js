@@ -3,14 +3,22 @@ import { useNavigation } from '@react-navigation/native';
 
 import { GlobalStyles } from '../../constants/styles';
 import { getFormattedDate } from '../../util/date';
+import { useState } from 'react';
+import LoadingOverlay from '../UI/LoadingOverlay';
 
 function ExpenseItem({ id, description, amount, date }) {
   const navigation = useNavigation();
+  const [toManExpense, setToManExpense] = useState(false)
+  if (toManExpense) {
+    return <LoadingOverlay />
+  }
 
   function expensePressHandler() {
+    setToManExpense(true)
     navigation.navigate('ManageExpense', {
       expenseId: id
     });
+    setToManExpense(false)
   }
 
   return (
@@ -19,7 +27,7 @@ function ExpenseItem({ id, description, amount, date }) {
       style={({ pressed }) => pressed && styles.pressed}
     >
       <View style={styles.expenseItem}>
-        <View>
+        <View style= {{width: '70%'}}>
           <Text style={[styles.textBase, styles.description]}>
             {description}
           </Text>
@@ -59,6 +67,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 4,
     fontWeight: 'bold',
+    // width: '65%'
   },
   amountContainer: {
     paddingHorizontal: 12,
@@ -68,6 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 4,
     minWidth: 80,
+    maxHeight: 45,
   },
   amount: {
     color: GlobalStyles.colors.primary500,

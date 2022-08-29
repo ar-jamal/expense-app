@@ -1,13 +1,15 @@
 import { useContext, useLayoutEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import ExpenseForm from '../components/ManageExpense/ExpenseForm';
 import IconButton from '../components/UI/IconButton';
 import { GlobalStyles } from '../constants/styles';
 import { ExpensesContext } from '../store/expenses-context';
 import { storeExpense, uptoDateExpense, deleteExpense } from '../util/http';
+import LoadingOverlay from '../components/UI/LoadingOverlay';
 
 function ManageExpense({ route, navigation }) {
+  const [isAdding, setIsAdding] = useState(false)
   const expensesCtx = useContext(ExpensesContext);
 
   const editedExpenseId = route.params?.expenseId;
@@ -23,31 +25,39 @@ function ManageExpense({ route, navigation }) {
       title: isEditing ? 'Edit Expense' : 'Add Expense',
     });
   }, [navigation, isEditing]);
+  
+  if (isAdding) {
+    return <LoadingOverlay />
+  }
 
   function deleteExpenseHandler() {
+    setIsAdding(true)
     deleteExpense(editedExpenseId);
-    expensesCtx.deleteExpense(editedExpenseId);
+    expensesCtx.deleteExpense(editedExpenseId); 
     navigation.goBack();
   }
   
-  async function addNewExpense (expenseData) {
-     const id = await storeExpense(expenseData);
-      setEditingId(id)
-      expensesCtx.addExpense({ ...expenseData, id: id });
-      navigation.goBack()
-    }
-  
+  // async function addNewExpense (expenseData) {
+  //    const id = await storeExpense(expenseData);
+  //     setEditingId(id)
+  //     expensesCtx.addExpense({ ...expenseData, id: id });
+  //     navigation.goBack()
+  //   }
 
   function cancelHandler() {
     navigation.goBack();
   }
-
   async function confirmHandler(expenseData) {
     if (isEditing) {
+      setIsAdding(true)
       await uptoDateExpense(editedExpenseId, expenseData)
+      setIsAdding(false)
       expensesCtx.updateExpense(editedExpenseId, expenseData);
+
     } else {
+      setIsAdding(true)
       const id = await storeExpense(expenseData);
+      setIsAdding(false)
       expensesCtx.addExpense({ ...expenseData, id: id });
     }
     navigation.goBack();
@@ -58,7 +68,8 @@ function ManageExpense({ route, navigation }) {
       <ExpenseForm
         submitButtonLabel={isEditing ? 'Update' : 'Add'}
         onSubmit={confirmHandler}
-        onSubmitNew= {addNewExpense}
+        // onSubmitNew= {addNewExpense}
+        checkExpId= {editedExpenseId}
         onCancel={cancelHandler}
         defaultValues={selectedExpense}
       />
